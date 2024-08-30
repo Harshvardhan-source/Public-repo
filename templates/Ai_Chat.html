@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShastraAI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .chat-container {
+            width: 70%;
+            max-width: 500px;
+            height: 65vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-y: auto;
+            padding-bottom: 80px; 
+        }
+
+        .chat-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chat-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;  
+        }
+
+        .chat-box {
+            width: 100%;
+            padding: 15px;
+            background-color: #444444;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            font-weight: 300;
+            color: #ffffff;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .chat-input-container {
+            width: 70%;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            bottom: 15px;
+            background-color: #1e1e1e;
+            padding: 8px 0;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            position: absolute;
+            top: 8px;
+            left: 2%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            color: #ffffff;
+            font-weight: 300;
+        }
+
+  
+        .chat-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .chat-input {
+            width: 100%;
+            height: 60px;
+            padding: 10px 10px 10px 40px; 
+            font-size: 14px;
+            font-weight: 300;
+            border: 1px solid #ffffff; 
+            border-radius: 10px 0 0 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: #333333;
+            color: #ffffff;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .chat-input::placeholder {
+            color: #888888;
+        }
+
+        .pin-icon {
+            position: absolute;
+            left: 4px; 
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px; 
+            height: 35px;
+            cursor: pointer;
+        }
+
+        .send-button {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 0 10px 10px 0;
+            background-color: #4CAF50;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .send-button:focus {
+            outline: none;
+        }
+
+        .send-button .arrow {
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 8px solid #ffffff;
+        }
+
+        .analysing {
+            font-size: 14px;
+            margin-bottom: -360px;
+        }
+
+        .dots {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 18px;
+            animation: blink 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes blink {
+            0%, 20% {
+                color: rgba(255, 255, 255, .2);
+            }
+            40% {
+                color: rgba(255, 255, 255, .6);
+            }
+            60% {
+                color: rgba(255, 255, 255, .9);
+            }
+            80%, 100% {
+                color: rgba(255, 255, 255, 1);
+            }
+        }
+
+        .label {
+            font-size: 12px;
+            color: #ffffff;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .download-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .download-box .download-icon {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .header-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to right, #1e1e1e, #333333);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .header {
+            position: fixed;
+            top: 10px;
+            left: 2%;
+            margin: 0;
+            color: #ffffff;
+            font-weight: 300;
+            z-index: 1000;
+            font-size: 24px;
+        }
+    </style>
+
+
+    <script>
+        function displayTypingEffect(element, text) {
+            let index = 0;
+            function type() {
+                if (index < text.length) {
+                    element.innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(type, 50);
+                }
+            }
+            type();
+        }
+
+        function submitChat(event) {
+            event.preventDefault();
+            const chatInput = document.querySelector('.chat-input');
+            const userMessage = chatInput.value;
+            const chatContainer = document.querySelector('.chat-container');
+            const analysingText = document.querySelector('.analysing');
+            const fileInput = document.querySelector('#file-input');
+
+            const userMessageBox = document.createElement('div');
+            userMessageBox.className = 'chat-box';
+            userMessageBox.innerHTML = `<div class="label">Query</div>${userMessage}`;
+            chatContainer.insertBefore(userMessageBox, chatContainer.querySelector('.analysing'));
+
+            analysingText.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('chat_input', userMessage);
+            if (fileInput.files[0]) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            fetch('/ChatResp', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                analysingText.style.display = 'none';
+                const responseBox = document.createElement('div');
+                responseBox.className = 'chat-box';
+                responseBox.innerHTML = `<div class="label">Result</div>`;
+                chatContainer.insertBefore(responseBox, userMessageBox.nextSibling);
+
+                if (data.file_url) {
+                    const downloadBox = document.createElement('a');
+                    downloadBox.className = 'download-box';
+                    downloadBox.href = data.file_url;
+                    downloadBox.download = true;
+                    downloadBox.innerHTML = `<img src="https://img.icons8.com/ios-filled/50/ffffff/download.png" class="download-icon"/>Download your data`;
+                    responseBox.appendChild(downloadBox);
+                } else {
+                    displayTypingEffect(responseBox, data.response);
+                }
+            });
+
+            chatInput.value = '';
+        }
+    </script>
+</head>
+
+<body>
+    <div class="header-background"></div>
+    <h2 class="header">ShastraAI boT</h2>
+
+    <div class="chat-container">
+        <div class="analysing" style="display: none;">Getting your Result Analysing <span class="dots">.....</span></div>
+    </div>
+    <div class="chat-input-container">
+        <form onsubmit="submitChat(event)" style="width: 100%; display: flex;">
+            <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" name="chat_input" placeholder="Get me your query..." />
+                <img src="{{ url_for('static', filename='images/pin.jfif') }}" alt="Pin Icon" class="pin-icon" onclick="document.getElementById('file-input').click();" />
+                <input type="file" id="file-input" name="file" style="display: none;" />
+            </div>
+            <button class="send-button" type="submit">
+                <div class="arrow"></div>
+            </button>
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

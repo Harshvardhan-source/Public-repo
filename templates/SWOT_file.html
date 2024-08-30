@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SWOT Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #1e1e1e, #333333);
+            color: #ffffff;
+            flex-direction: column;
+        }
+        .header-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to right, #1e1e1e, #333333);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .header {
+            font-family: 'Roboto Slab', serif;
+            font-size: 36px;
+            font-weight: 700;
+            position: fixed;
+            top: 10px;
+            left: 2%;
+            margin: 0;
+            color: #ffffff;
+            z-index: 1000;
+            margin-top: -7px;
+        }
+        .header::after {
+            content: "";
+            display: none;
+        }
+        
+        
+        .ward-header {
+            position: fixed;
+            top: 8px; 
+            left: 23%;
+            margin: 0;
+            color: #ffffff99;
+            font-weight: 300;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        .table-container, .right-table-container .table-container4{
+            position: absolute;
+            width: 20%;
+            height: 75%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .table-container .table-container4 {
+            top: 75px;
+            left: 2%;
+        }
+        .right-table-container {
+            top: 75px;
+            right: 2%;
+        }
+        .total-voters {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+            margin-left: 20px;
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .total-voters4 {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: -120px;
+            margin-left: 20px;
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        th {
+            background: linear-gradient(to right, #3e3e3e, #2c2c2c);
+            padding: 10px;
+            text-align: left;
+            font-size: 14px; 
+            color: #ffffff;
+        }
+        td {
+            padding: 10px;
+            text-align: left;
+            font-size: 12px; 
+            color: #ffffff;
+            border-top: 1px solid #3e3e3e;
+        }
+        td .total-voters {
+            width: 100%;
+        }
+        td .total-voters td {
+            padding: 5px;
+            font-size: 12px;
+            color: #ffffff;
+        }
+
+        td .total-voters4 {
+            width: 100%;
+        }
+        td .total-voters4 td {
+            padding: 5px;
+            font-size: 12px;
+            color: #ffffff;
+        }
+        .positive {
+            color: #4CAF50;
+        }
+        .negative {
+            color: #F44336;
+        }
+        .trend-img {
+            width: 15px;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        .trend-img2 {
+            width: 18px;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        .table-container::-webkit-scrollbar, .right-table-container::-webkit-scrollbar {
+            display: none; 
+        }
+        .table-container {
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
+
+        .swot-table-container {
+            position: absolute;
+            top: calc(75px + 40%);
+            left: 2%;
+            width: 96%;
+        }
+        .swot-table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .swot-table th, .swot-table td {
+            padding: 10px;
+            text-align: left;
+            font-size: 12px; 
+            color: #ffffff;
+            border-top: 1px solid #3e3e3e;
+        }
+        .swot-table th {
+            background: linear-gradient(to right, #3e3e3e, #2c2c2c);
+            font-size: 14px;
+        }
+        .long-box {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to right, #3e3e3e, #2c2c2c);
+            margin-top: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .custom-dropdown {
+            position: relative;
+            width: 95%;
+            margin: 20px;
+        }
+        .selected-option {
+            background: #3e3e3e;
+        }
+        select {
+            width: calc(100% - 60px); 
+            padding: 10px;
+            box-sizing: border-box;
+            border: 3px solid #585858;
+            border-radius: 10px;
+            background: #2c2c2c; 
+            color: #ffffff; 
+            appearance: none;
+            -moz-appearance: none;
+            transition: border-color 0.3s;
+        }
+        
+        select:hover {
+            border-color: #ffffff; 
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #4CAF50; 
+        }
+        
+        select::after {
+            content: '\25BC';
+            font-size: 1.2em;
+            color: #ffffff;
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+        }
+        
+        option {
+            background: #2c2c2c; 
+            color: #ffffff; 
+        }
+        
+        option:hover {
+            background: #3e3e3e; 
+        }
+        .dropdown-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .chart-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            width: 80%; /* Adjusted width */
+            max-width: 759px; /* Maximum width */
+            height: 78%; /* Adjusted height */
+        }
+
+        .chart-container .close-button {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px; /* Increased font size */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+   
+        .list-button {
+            position: absolute;
+            right: 60px;
+            height: 100%;
+            background: #FF9800; 
+            color: #ffffff;
+            border: none;
+            border-radius: 0 10px 10px 0;
+            cursor: pointer;
+            padding: 10px;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .list-button:hover {
+            background-color: #f57c00; 
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-background"></div>
+    <h2 class="header">SWOT Analysis</h2>
+    <h3 class="ward-header">{{ward}}</h3>
+
+    <div class="table-container">
+        <table class="total-voters">
+            {% for k1, v1 in totalvoters.items() %}
+            {% if loop.index <= 2 %}
+            <tr>
+                <th colspan="2">{{ k1 }}</th>
+            </tr>
+            <tr>
+                <td class="{{ 'positive' if v1[0] == 'Positive' else 'negative' }}">
+                    {{ '+' if v1[0] == 'Positive' else '' }}{{ '%.2f'|format(v1[1]) }}%
+                    {% if v1[0] == 'Positive' %}
+                        <img src="static/images/up1.png" class="trend-img" />
+                    {% elif v1[0] == 'Negative' %}
+                        <img src="static/images/down.jfif" class="trend-img2" />
+                    {% endif %}
+                </td>
+                <td>{{ v1[2] }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="table-container4">
+        <table class="total-voters4">
+            {% for k1, v1 in totalMinors.items() %}
+            {% if loop.index <= 2 %}
+            <tr>
+                <th colspan="2">{{ k1 }}</th>
+            </tr>
+            <tr>
+                <td class="{{ 'positive' if v1[0] == 'Positive' else 'negative' }}">
+                    {{ '+' if v1[0] == 'Positive' else '' }}{{ '%.2f'|format(v1[1]) }}%
+                    {% if v1[0] == 'Positive' %}
+                        <img src="static/images/up1.png" class="trend-img" />
+                    {% elif v1[0] == 'Negative' %}
+                        <img src="static/images/down.jfif" class="trend-img2" />
+                    {% endif %}
+                </td>
+                <td>{{ v1[2] }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="swot-table-container">
+        <table class="swot-table">
+            {% for k_, v_ in SWOT_data.items() %}
+            <tr>
+                <th colspan="2">
+                    <div>
+                        <h2>{{ k_ }}</h2>
+                    </div>
+                </th>
+            </tr>
+            {% for k_1, v_2 in v_.items() %}
+            <tr>
+
+                <th colspan="2" data-category="{{ k_1 }}">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>
+                            {% if k_1 == 'S' %}
+                                Strong
+                            {% elif k_1 == 'W' %}
+                                Weak
+                            {% elif k_1 == 'O' %}
+                                Opportunity
+                            {% elif k_1 == 'T' %}
+                                Threat
+                            {% endif %}
+                        </h3>
+                    </div>
+                    
+                    <div class="custom-dropdown">
+                        {% for k_3, v_3 in v_2.items() %}
+                        <div class="dropdown-wrapper">
+                            <form action="/process" method="POST" style="display: flex; width: 100%;">
+                                <input type="hidden" name="Ward" value="{{ ward }}">
+                                <input type="hidden" name="Category" value="{{ k_ }}">
+                                <select name="option_val" onchange="changeColor(this)" id="option-select" style="background-color: 
+                                    {% if k_3 == 'HA' %}
+                                        #006400;  /* Dark Green */
+                                    {% elif k_3 == 'HB' %}
+                                        #49c72d;  /* Light Green */
+                                    {% elif k_3 == 'HC' %}
+                                        #57bc57;  /* Green */
+                                    {% elif k_3 == 'HD' %}
+                                        #99f199;  /* Pale Green */
+                                    {% elif k_3 == 'MA' %}
+                                        #9f9a0d;  /* Dark Blue */
+                                    {% elif k_3 == 'MB' %}
+                                        #99cb1c;  /* Light Blue */
+                                    {% elif k_3 == 'MC' %}
+                                        #a5c553;  /* Sky Blue */
+                                    {% elif k_3 == 'LA' %}
+                                        #cb584b;  /* Dark Red */
+                                    {% elif k_3 == 'LB' %}
+                                        #bd392b;  /* Light Coral */
+                                    {% elif k_3 == 'LC' %}
+                                        #520e07;  /* Salmon */
+                                    {% endif %}">
+                                    
+                                    {% for queries in v_3 %}
+                                        {% for kl, vl in queries.items() %}
+                                            {% set value_for_option = vl['Query'] %}
+                                            {% set Count = vl['Count'] %}
+                                            {% set hml = vl['HML_Label'] %}
+                                            {% set swot = vl['SWOT'] %}
+                                            {% set Comparable_q = vl['ComparableQueries'][0] %}
+                                            {% set value_string = ', '.join(vl['Query'].values()) %}
+                                            <option value="{{ vl }}">{{ value_string }}</option>  
+                                        {% endfor %}
+                                    {% endfor %}
+                                </select>
+                        
+                                <button name="List" class="list-button" type="submit">Info</button>
+                                
+                            </form>
+                            
+                        </div>
+                        
+                        {% endfor %}
+                    </div>
+                </th>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table>
+       
+    </div>
+
+    
+    <script>
+        function changeColor(select) {
+            select.querySelectorAll('option').forEach(option => {
+                option.classList.remove('selected-option');
+            });
+            select.options[select.selectedIndex].classList.add('selected-option');
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShastraAI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        h3 {
+            position: absolute;
+            top: 10px;
+            left: 17.5%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #ffffff81;
+            font-weight: 300;
+            font-size: 12px;
+        }
+        h2 {
+            position: absolute;
+            top: 10px;
+            left: 2%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            font-weight: 300;
+        }
+       
+        .leaflet-popup-content-wrapper {
+            background: #333;
+            color: #fff;
+            font-weight: 300;
+        }
+        .leaflet-popup-tip {
+            background: #333;
+        }
+        .table-container, .right-table-container, .center-table-container {
+            position: absolute;
+            height: 75%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .table-container {
+            top: 75px;
+            left: 2%;
+            width: 25%;
+        }
+        .right-table-container {
+            top: 75px;
+            right: 2%;
+            width: 20%;
+        }
+        .center-table-container {
+            top: 150px;
+            left: 52%;
+            transform: translateX(-50%);
+            width: 30%;
+        }
+
+        .center-table-container1 {
+            position: absolute; /* Use absolute positioning to control the exact position */
+            top: 520px; /* Set the top margin */
+            transform: translateX(50%); /* Move it 50% of its width to the left to overlap with the other container */
+            width: 15%; /* Set the width */
+            margin-left: 50px;
+        }
+        
+        .center-table-container2 {
+            position: absolute; /* Use absolute positioning */
+            top: 520px; /* Ensure the top margin matches the first container */
+            transform: translateX(-50%); /* Move it 50% of its width to the right to overlap with the first container */
+            width: 15%; /* Set the width */
+            margin-left: 52px;
+        }
+
+        .center-table-container3 {
+            position: absolute; /* Use absolute positioning */
+            top: 800px; /* Ensure the top margin matches the first container */
+            transform: translateX(-50%); /* Move it 50% of its width to the right to overlap with the first container */
+            width: 15%; /* Set the width */
+            margin-left: 55px;
+        }
+        
+        .center-table-container4 {
+            position: absolute; /* Use absolute positioning */
+            top: 800px; /* Ensure the top margin matches the first container */
+            transform: translateX(-50%); /* Move it 50% of its width to the right to overlap with the first container */
+            width: 15%; /* Set the width */
+            margin-left: 418px;
+        }
+
+
+
+        .center-table-container7 {
+            position: absolute; /* Use absolute positioning */
+            top: 1080px; /* Ensure the top margin matches the first container */
+            transform: translateX(-50%); /* Move it 50% of its width to the right to overlap with the first container */
+            width: 15%; /* Set the width */
+            margin-left: 55px;
+        }
+        
+        .center-table-container8 {
+            position: absolute; /* Use absolute positioning */
+            top: 1080px; /* Ensure the top margin matches the first container */
+            transform: translateX(-50%); /* Move it 50% of its width to the right to overlap with the first container */
+            width: 15%; /* Set the width */
+            margin-left: 418px;
+        }
+
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        th {
+            background-color: #3e3e3e;
+            padding: 10px;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #fff;
+            position: relative;
+        }
+        th .chart-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        td {
+            padding: 10px;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #fff;
+            border-top: 1px solid #3e3e3e;
+        }
+        td table {
+            width: 100%;
+        }
+        td table td {
+            padding: 5px;
+            font-size: 12px;
+            color: #fff;
+        }
+        .positive {
+            color: green;
+        }
+        .negative {
+            color: red;
+        }
+        .trend-img {
+            width: 15px;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        .trend-img2 {
+            width: 18px;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        .table-container::-webkit-scrollbar, .right-table-container::-webkit-scrollbar, .center-table-container::-webkit-scrollbar {
+            display: none;
+        }
+        .table-container, .right-table-container, .center-table-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .location-label {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            display: none;
+            font-size: 12px;
+        }
+        .opportunity {
+            background-color: green;
+        }
+        .threat {
+            background-color: red;
+        }
+        .chart-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            width: 80%; 
+            max-width: 759px;
+            height: 78%; 
+        }
+        .chart-container .close-button {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px; 
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .wmen-emp {
+            margin-left: 450px;
+            margin-top: 90px;
+        }
+
+        .wmen-eco {
+            margin-left: 450px;
+            margin-top: 90px;
+        }
+
+        .header-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to right, #1e1e1e, #333333);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .header {
+            position: fixed;
+            top: 10px;
+            left: 2%;
+            margin: 0;
+            color: #ffffff;
+            font-weight: 300;
+            z-index: 1000;
+            font-size: 24px;
+        }
+        .header::after {
+            content: "";
+            display: none;
+        }
+        
+        
+        .ward-header {
+            position: fixed;
+            top: 8px; 
+            left: 16%;
+            margin: 0;
+            color: #ffffff99;
+            font-weight: 300;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        .ward-container {
+            position: absolute;
+            top: 105px;
+            left: 37%;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px 100px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .ward-container h3 {
+            margin: 0;
+            color: #f1eeee;
+            font-weight: 300;
+            font-family: Arial, sans-serif;
+        }
+
+        .ward-container1 {
+            position: absolute;
+            margin-top: 400px;
+            left: 37%;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px 100px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .ward-container1 h3 {
+            margin: 0;
+            color: #f1eeee;
+            font-weight: 300;
+            font-family: Arial, sans-serif;
+        }
+        .ward-container2 {
+            position: absolute;
+            margin-top: 940px;
+            left: 37%;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px 100px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .ward-container2 h3 {
+            margin: 0;
+            color: #f1eeee;
+            font-weight: 300;
+            font-family: Arial, sans-serif;
+        }
+        .ward-container3 {
+            position: absolute;
+            margin-top: 1500px;
+            left: 37%;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px 100px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .ward-container3 h3 {
+            margin: 0;
+            color: #f1eeee;
+            font-weight: 300;
+            font-family: Arial, sans-serif;
+        }
+        .minemp canvas {
+            width: 25%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header-background"></div>
+    <h2 class="header">Ward Overview</h2>
+    <h3 class="ward-header">{{location_name}}</h3>
+    <h3>{{location_name}}</h3>
+
+    <div class="table-container">
+        <table>
+            <tr>
+                <th colspan="2">Religion
+                    <button class="chart-button" id="religion-chart-button">Chart</button>
+                </th>
+            </tr>
+            {% for k1, v1 in HMCAnalytics_data['Religion'].items() %}
+            <tr>
+                <td>{{ k1 }}</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td class="{{ 'positive' if v1[0] == 'Positive' else 'negative' }}">
+                                {{ '+' if v1[0] == 'Positive' else '' }}{{ '%.2f'|format(v1[1]) }}%
+                                {% if v1[0] == 'Positive' %}
+                                <img src="static/images/up1.png" class="trend-img" />
+                                {% elif v1[0] == 'Negative' %}
+                                <img src="static/images/down.jfif" class="trend-img2" />
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{v1[2]}}
+                            </td>
+                            <td>
+                                {{v1[3]}}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        
+        {% for k1, v1 in analytics_data.items() %}
+        {% if loop.index <= 2 %}
+        <table>
+            <tr>
+                <th colspan="2">{{ k1 }}
+                    <button class="chart-button" id="analy-chart-button">Chart</button>
+                </th>
+            </tr>
+            {% for k2, v2 in v1.items() %}
+            <tr>
+                <td>{{ k2 }}</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td class="{{ 'positive' if v2[0] == 'Positive' else 'negative' }}">
+                                {{ '+' if v2[0] == 'Positive' else '' }}{{ '%.2f'|format(v2[1]) }}%
+                                {% if v2[0] == 'Positive' %}
+                                <img src="static/images/up1.png" class="trend-img" />
+                                {% elif v2[0] == 'Negative' %}
+                                <img src="static/images/down.jfif" class="trend-img2" />
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{v2[2]}}
+                            </td>
+                            <td>
+                                {% for k5, v5 in v2[3].items() %}
+                                {{v5}}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% endif %}
+        {% endfor %}
+
+
+
+    </div>
+    <div class="ward-container">
+       <h3 class="wmen-emp">Women EmploymentStatus</h3>
+    </div>
+    <div class="center-table-container">
+        <div id="pie-chart-container1">
+            <canvas id="donut-chart" style="background-color: rgb(52, 50, 50); height:300px"></canvas>
+        </div>
+    </div>
+    <div class="ward-container1">
+        <h3 class="wmen-emp">Minority EmploymentStatus</h3>
+     </div>
+
+    <div class="center-table-container1">
+        <div id="pie-chart-container2">
+            <canvas class="minemp" id="MinorEmpstatus-donut-chart" style="background-color: rgb(52, 50, 50); height:200px"></canvas>
+        </div>
+    </div>
+    <div class="center-table-container2">
+        <div id="pie-chart-container3">
+            <canvas class="minunemp" id="MinorEmpstatus-donut-chart2" style="background-color: rgb(52, 50, 50); height:200px"></canvas>
+        </div>
+    </div>
+    <div class="ward-container2">
+        <h3 class="wmen-eco">Minority EconomicStatus</h3>
+    </div>
+    <div class="center-table-container3">
+        <div id="pie-chart-container4">
+            <canvas class="mineconomic-bpl" id="MinorEcostatus-bpl-donut-chart1" style="background-color: rgb(52, 50, 50); height:200px"></canvas>
+        </div>
+    </div>
+
+    <div class="center-table-container4">
+        <div id="pie-chart-container5">
+            <canvas class="mineconomic-apl" id="MinorEcostatus-apl-donut-chart1" style="background-color: rgb(52, 50, 50); height:200px"></canvas>
+        </div>
+    </div>
+    <div class="ward-container3">
+        <h3 class="wmen-hea">Minority HealthStatus</h3>
+    </div>
+    <div class="center-table-container7">
+        <div id="pie-chart-container7">
+            <canvas class="minhealthstat-hea" id="minhealthstat-hea-donut-chart1" style="background-color: rgb(52, 50, 50); height:200px"></canvas>
+        </div>
+    </div>
+
+    <div class="center-table-container8">
+        <div id="pie-chart-container8">
+            <canvas class="minhealthstat-dis" id="minhealthstat-dis-donut-chart1" style="background-color: rgb(52, 50, 50); height:200px"></canvas>
+        </div>
+    </div>
+
+    <div class="right-table-container">
+        {% for k1, v1 in analytics_data.items() %}
+        {% if loop.index > 2 %}
+        <table>
+            <tr>
+                <th colspan="2">{{ k1 }}
+                    <button class="chart-button" id="analy-chart-button">Chart</button>
+                </th>
+            </tr>
+            {% for k2, v2 in v1.items() %}
+            <tr>
+                <td>{{ k2 }}</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td class="{{ 'positive' if v2[0] == 'Positive' else 'negative' }}">
+                                {{ '+' if v2[0] == 'Positive' else '' }}{{ '%.2f'|format(v2[1]) }}%
+                                {% if v2[0] == 'Positive' %}
+                                <img src="static/images/up1.png" class="trend-img" />
+                                {% elif v2[0] == 'Negative' %}
+                                <img src="static/images/down.jfif" class="trend-img2" />
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{v2[2]}}
+                            </td>
+                            <td>
+                                {% for k5, v5 in v2[3].items() %}
+                                {{v5}}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var donutData = {{ pie_chart_data | tojson }};
+            
+            var ctx = document.getElementById('donut-chart').getContext('2d');
+            var donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(donutData),
+                    datasets: [{
+                        data: Object.values(donutData),
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#d4a62a', '#c0392b', '#7a7d89', '#e36209', '#563d7c'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',  
+                            anchor: 'end', 
+                            align: 'end',  
+                            offset: 10,    
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#fff",  
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: 'white'  
+                        }
+                    },
+                    cutoutPercentage: 50,  
+                },
+            });
+        });
+    </script>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var donutData = {{ pie_chart_data_min_emp | tojson }};
+            
+            var ctx = document.getElementById('MinorEmpstatus-donut-chart').getContext('2d');
+            var donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(donutData),
+                    datasets: [{
+                        data: Object.values(donutData),
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#d4a62a', '#c0392b', '#7a7d89', '#e36209', '#563d7c'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',  
+                            anchor: 'end', 
+                            align: 'end',  
+                            offset: 10,    
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#fff",  
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: 'white'  
+                        }
+                    },
+                    cutoutPercentage: 50,  
+                },
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var donutData = {{ pie_chart_data_min_unemp | tojson }};
+            
+            var ctx = document.getElementById('MinorEmpstatus-donut-chart2').getContext('2d');
+            var donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(donutData),
+                    datasets: [{
+                        data: Object.values(donutData),
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#d4a62a', '#c0392b', '#7a7d89', '#e36209', '#563d7c'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',  
+                            anchor: 'end', 
+                            align: 'end',  
+                            offset: 10,    
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#fff",  
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: 'white'  
+                        }
+                    },
+                    cutoutPercentage: 50,  
+                },
+            });
+        });
+    </script>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var donutData = {{ pie_chart_data_min_apl | tojson }};
+            
+            var ctx = document.getElementById('MinorEcostatus-apl-donut-chart1').getContext('2d');
+            var donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(donutData),
+                    datasets: [{
+                        data: Object.values(donutData),
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#d4a62a', '#c0392b', '#7a7d89', '#e36209', '#563d7c'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',  
+                            anchor: 'end', 
+                            align: 'end',  
+                            offset: 10,    
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#fff",  
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: 'white'  
+                        }
+                    },
+                    cutoutPercentage: 50,  
+                },
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var donutData = {{ pie_chart_data_min_bpl | tojson }};
+            var ctx = document.getElementById('MinorEcostatus-bpl-donut-chart1').getContext('2d');
+            var donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(donutData),
+                    datasets: [{
+                        data: Object.values(donutData),
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#d4a62a', '#c0392b', '#7a7d89', '#e36209', '#563d7c'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',  
+                            anchor: 'end', 
+                            align: 'end',  
+                            offset: 10,    
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#fff",  
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: 'white'  
+                        }
+                    },
+                    cutoutPercentage: 50,  
+                },
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var donutData = {{ pie_chart_data_min_hea | tojson }};
+            
+            var ctx = document.getElementById('minhealthstat-hea-donut-chart1').getContext('2d');
+            var donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(donutData),
+                    datasets: [{
+                        data: Object.values(donutData),
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#d4a62a', '#c0392b', '#7a7d89', '#e36209', '#563d7c'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',  
+                            anchor: 'end', 
+                            align: 'end',  
+                            offset: 10,    
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#fff",  
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: 'white'  
+                        }
+                    },
+                    cutoutPercentage: 50,  
+                },
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var donutData = {{ pie_chart_data_min_dis | tojson }};
+            var ctx = document.getElementById('minhealthstat-dis-donut-chart1').getContext('2d');
+            var donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(donutData),
+                    datasets: [{
+                        data: Object.values(donutData),
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#fd7e14', '#6f42c1'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#d4a62a', '#c0392b', '#7a7d89', '#e36209', '#563d7c'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, context) => {
+                                let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',  
+                            anchor: 'end', 
+                            align: 'end',  
+                            offset: 10,    
+                            labels: {
+                                title: {
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#fff",  
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: 'white'  
+                        }
+                    },
+                    cutoutPercentage: 50,  
+                },
+            });
+        });
+    </script>
+</body>
+</html>

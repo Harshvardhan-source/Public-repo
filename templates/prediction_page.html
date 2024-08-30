@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShastraAI Timeline</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            flex-direction: column;
+            overflow-x: hidden;  
+            overflow-y: auto; 
+            scrollbar-width: none; 
+        }
+    
+        body::-webkit-scrollbar {
+            display: none; 
+        }
+        
+        .header-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to right, #1e1e1e, #333333);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    
+        .header {
+            font-family: 'Roboto Slab', serif;
+            font-size: 36px;
+            font-weight: 700;
+            position: fixed;
+            top: 10px;
+            left: 2%;
+            margin: 0;
+            color: #ffffff;
+            z-index: 1000;
+            margin-top: -7px;
+        }
+    
+        .timeline-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 100px;
+            flex-wrap: wrap;
+            margin-left: 370px;
+        }
+    
+        .time-line-heading {
+            margin-top: 50px;
+            margin-left: 450px;
+        }
+    
+        .time-box {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            min-width: 80px;
+        }
+    
+        .time-box span {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        .label {
+            font-size: 14px;
+            color: #aaa;
+        }
+    
+        .new-box {
+            margin-top: 10px;
+            width: 100%;
+            background-color: #2e2e2e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+    
+        .categories-container {
+            display: flex;
+            width: 100%;
+            margin-top: 20px;
+        }
+    
+        .category-box {
+            background: linear-gradient(to right, #444, #555);
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex-grow: 1;
+            margin-left: 0;
+            border-right: 1px solid #666;
+        }
+    
+        .category-box:last-child {
+            border-right: none;
+        }
+    
+        .category-content {
+            margin-top: 10px;
+            display: none;
+            width: 100%;
+        }
+    
+        .category-content h3 {
+            margin-top: 0;
+        }
+    
+        .ward-container {
+            position: absolute;
+            margin-top: 50px;
+            margin-left: 450px;
+            left: 2%;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+    
+        .ward-container h3 {
+            margin: 0;
+            color: #f1eeee;
+            font-weight: 300;
+            font-family: Arial, sans-serif;
+        }
+    
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        table, th, td {
+            border: 1px solid rgb(63, 62, 62);
+        }
+    
+        th, td {
+            padding: 12px;
+            text-align: left;
+            background-color: rgb(63, 62, 62);
+        }
+    
+        th {
+            background-color: #626466;
+            color: rgb(63, 62, 62);
+        }
+    
+        tr:nth-child(even) {
+            background-color: rgb(63, 62, 62);
+        }
+    
+        tr:hover {
+            background-color: rgb(63, 62, 62);
+        }
+
+
+
+        .upload-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+        }
+    
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+    
+        .upload-area.dragging {
+            background-color: #e0f7fa;
+            border-color: #00acc1;
+        }
+    
+        .upload-area .icon {
+            font-size: 40px;
+            color: #00acc1;
+            margin-bottom: 10px;
+        }
+    
+        .upload-area .text {
+            font-size: 16px;
+            color: #555;
+        }
+    
+        .input-group {
+            margin-top: 20px;
+        }
+    
+        .input-group input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00acc1;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        button:hover {
+            background-color: #00838f;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 110%;
+            height: 80%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            margin-top: 70px;
+        }
+
+        .modal-content {
+            background-color: #1e1e1e;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .curved-edges {
+            border-collapse: collapse;
+            border-radius: 15px;
+            overflow: hidden; /* This is important for the border-radius to work on tables */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better visuals */
+        }
+        
+        .curved-edges th, .curved-edges td {
+            border: 1px solid #ddd; /* Ensure the borders are visible */
+            padding: 8px; /* Optional: Adds padding inside the cells */
+        }
+        
+        .curved-edges th {
+            background-color: #f2f2f2; /* Optional: Background color for the table headers */
+            text-align: left;
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="header-background"></div>
+    <h2 class="header">Predictions</h2>
+    <div class="ward-container">
+        <h3 class="time-line-heading" style="font-weight: 300;">Assumed election Timeline</h3>
+    </div>
+    <div class="timeline-container">
+        <div class="time-box">
+            <span id="years">0</span>
+            <div class="label">Years</div>
+        </div>
+        <div class="time-box">
+            <span id="months">0</span>
+            <div class="label">Months</div>
+        </div>
+        <div class="time-box">
+            <span id="days">0</span>
+            <div class="label">Days</div>
+        </div>
+        <div class="time-box">
+            <span id="hours">0</span>
+            <div class="label">Hours</div>
+        </div>
+    </div>
+
+    <div class="upload-container">
+        <div class="upload-area" id="uploadArea">
+            <div class="icon">&#8682;</div>
+            <div class="text">Drag & Drop your file here or click to browse</div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx, .csv" hidden>
+        <div class="input-group">
+            <input type="text" id="timePeriodColumn" placeholder="Enter the Name of Time period column">
+            <input type="text" id="dataColumn" placeholder="Enter the name of data to predict column">
+            <input type="text" id="predictionYear" placeholder="Expected time period / year to predict">
+        </div>
+        <button onclick="uploadAndPredict()">Upload and Predict</button>
+    
+        <div id="resultContainer" style="display:none; margin-top:20px;">
+            <div id="predictedValueDisplay" style="background-color: #2feb5a; padding: 10px; border-radius: 5px;">
+                <strong>Predicted:</strong> <span id="predictedValue"></span>
+            </div>
+            <button id="viewDataButton" style="margin-top: 10px;">View Data</button>
+        </div>
+    </div>
+
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3></h3>
+            <div id="dataTable" class="curved-edges"></div>
+            <canvas id="dataChart" style="margin-top:10px;"></canvas>
+        </div>
+    </div>
+
+    
+    <div class="new-box">
+        <div class="categories-container">
+            <div class="category-box" onclick="toggleContent('mla')">Predictions for the 2028 MLA Election</div>
+            <div class="category-box" onclick="toggleContent('mp')">Predictions for the 2029 MP Election</div>
+        </div>
+        <div id="mla" class="category-content"></div>
+        <div id="mp" class="category-content"></div>
+    </div>
+
+    <script>
+        let myChart1;
+        let myChart2;
+        let myChart3;
+        let myChart4;
+        let myChart5;
+        function updateTime() {
+            const endDate = new Date('May 11, 2028 00:00:00').getTime();
+            const now = new Date().getTime();
+            const timeLeft = endDate - now;
+            const years = Math.floor(timeLeft / (1000 * 60 * 60 * 24 * 365));
+            const months = Math.floor((timeLeft % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
+            const days = Math.floor((timeLeft % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('years').textContent = years;
+            document.getElementById('months').textContent = months;
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+        }
+        function toggleContent(category) {
+            const content = document.getElementById(category);
+            const allContents = document.querySelectorAll('.category-content');
+            allContents.forEach(element => {
+                if (element !== content) {
+                    element.style.display = 'none';
+                }
+            });
+            content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
+        
+            if (myChart1) {
+                myChart1.destroy();
+            }
+            if (myChart2) {
+                myChart2.destroy();
+            }
+            if (myChart3) {
+                myChart3.destroy();
+            }
+            if (myChart4) {
+                myChart4.destroy();
+            }
+
+            if (myChart5) {
+                myChart5.destroy();
+            }
+        
+            fetch('/prediction_pg', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ category: category }),
+            })
+
+
+            .then(response => response.json())
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(category === 'mla' ? data.voting_TableData_mla : data.voting_TableData_mp, 'text/html');
+                const table = doc.querySelector('table');
+
+                const doc2 = parser.parseFromString(category === 'mla' ? data.polling_TableData_mla : data.polling_TableData_mp, 'text/html');
+                const table2 = doc2.querySelector('table');
+
+                const doc3 = parser.parseFromString(category === 'mla' ? data.bjp_TableData_mla : data.bjp_TableData_mp, 'text/html');
+                const table3 = doc3.querySelector('table');
+
+                const doc4 = parser.parseFromString(category === 'mla' ? data.inc_TableData_mla : data.inc_TableData_mp, 'text/html');
+                const table4 = doc4.querySelector('table');
+
+                const doc5 = parser.parseFromString(category === 'mla' ? data.oth_TableData_mla : data.oth_TableData_mp, 'text/html');
+                const table5 = doc5.querySelector('table');
+
+                const secondRowCells = table.rows[5].cells;
+                    for (let i = 1; i < secondRowCells.length; i++) {
+                        secondRowCells[i].innerHTML += 
+                            `<span style="
+                                display: inline-block;
+                                background-color: green;
+                                color: white;
+                                padding: 2px 8px;
+                                border-radius: 35px;
+                                font-size: 12px;
+                                margin-left: 10px;
+                            ">P</span>`;
+                    }
+
+                const secondRowCells2 = table2.rows[5].cells;
+                    for (let i = 1; i < secondRowCells2.length; i++) {
+                        secondRowCells2[i].innerHTML += 
+                            `<span style="
+                                display: inline-block;
+                                background-color: green;
+                                color: white;
+                                padding: 2px 8px;
+                                border-radius: 35px;
+                                font-size: 12px;
+                                margin-left: 10px;
+                            ">P</span>`;
+                    }
+
+                const secondRowCells3 = table3.rows[5].cells;
+                    for (let i = 1; i < secondRowCells3.length; i++) {
+                        secondRowCells3[i].innerHTML += 
+                            `<span style="
+                                display: inline-block;
+                                background-color: green;
+                                color: white;
+                                padding: 2px 8px;
+                                border-radius: 35px;
+                                font-size: 12px;
+                                margin-left: 10px;
+                            ">P</span>`;
+                    }
+
+
+                const secondRowCells4 = table4.rows[5].cells;
+                    for (let i = 1; i < secondRowCells4.length; i++) {
+                        secondRowCells4[i].innerHTML += 
+                            `<span style="
+                                display: inline-block;
+                                background-color: green;
+                                color: white;
+                                padding: 2px 8px;
+                                border-radius: 35px;
+                                font-size: 12px;
+                                margin-left: 10px;
+                            ">P</span>`;
+                    }
+
+                const secondRowCells5 = table5.rows[5].cells;
+                    for (let i = 1; i < secondRowCells5.length; i++) {
+                        secondRowCells5[i].innerHTML += 
+                            `<span style="
+                                display: inline-block;
+                                background-color: green;
+                                color: white;
+                                padding: 2px 8px;
+                                border-radius: 35px;
+                                font-size: 12px;
+                                margin-left: 10px;
+                            ">P</span>`;
+                    }
+
+
+                table.style.width = '80%'; 
+                table.style.minWidth = '600px'; 
+                table.style.borderCollapse = 'collapse';
+                table.style.fontFamily = "'Roboto', sans-serif";
+
+                table2.style.width = '80%'; 
+                table2.style.minWidth = '600px'; 
+                table2.style.borderCollapse = 'collapse';
+                table2.style.fontFamily = "'Roboto', sans-serif";
+                
+                table3.style.width = '80%'; 
+                table3.style.minWidth = '600px'; 
+                table3.style.borderCollapse = 'collapse';
+                table3.style.fontFamily = "'Roboto', sans-serif";
+
+                table4.style.width = '80%'; 
+                table4.style.minWidth = '600px'; 
+                table4.style.borderCollapse = 'collapse';
+                table4.style.fontFamily = "'Roboto', sans-serif";
+                
+                table5.style.width = '80%'; 
+                table5.style.minWidth = '600px'; 
+                table5.style.borderCollapse = 'collapse';
+                table5.style.fontFamily = "'Roboto', sans-serif";
+
+                const thStyles = `
+                    background-color: #f4f4f4;
+                    color: #333;
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 2px solid #ddd;
+                    font-size: 16px;
+                `;
+                const tdStyles = `
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                    font-size: 14px;
+                `;
+                
+                const thStyles2 = `
+                    background-color: #f4f4f4;
+                    color: #333;
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 2px solid #ddd;
+                    font-size: 16px;
+                `;
+                const tdStyles2 = `
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                    font-size: 14px;
+                `;
+
+                const thStyles3 = `
+                    background-color: #f4f4f4;
+                    color: #333;
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 2px solid #ddd;
+                    font-size: 16px;
+                `;
+                const tdStyles3 = `
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                    font-size: 14px;
+                `;
+
+                const thStyles4 = `
+                    background-color: #f4f4f4;
+                    color: #333;
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 2px solid #ddd;
+                    font-size: 16px;
+                `;
+                const tdStyles4 = `
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                    font-size: 14px;
+                `;
+
+                const thStyles5 = `
+                    background-color: #f4f4f4;
+                    color: #333;
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 2px solid #ddd;
+                    font-size: 16px;
+                `;
+                const tdStyles5 = `
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                    font-size: 14px;
+                `;
+        
+                table.querySelectorAll('th').forEach(th => th.style.cssText = thStyles);
+                table.querySelectorAll('td').forEach(td => td.style.cssText = tdStyles);
+                const lastRow = table.querySelector('tr:last-child');
+
+                lastRow.style.backgroundColor = '#d3f9d8';
+                const tableContainer = `
+                    <div style="
+                        overflow-x: auto;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        border-radius: 25px;
+                        margin-top: 20px;
+                    ">
+                        ${table.outerHTML}
+                    </div>
+                `;
+
+
+                table2.querySelectorAll('th').forEach(th => th.style.cssText = thStyles2);
+                table2.querySelectorAll('td').forEach(td => td.style.cssText = tdStyles2);
+                const lastRow2 = table2.querySelector('tr:last-child');
+
+                lastRow2.style.backgroundColor = '#d3f9d8';
+                const tableContainer2 = `
+                    <div style="
+                        overflow-x: auto;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        border-radius: 25px;
+                        margin-top: 55px;
+                    ">
+                        ${table2.outerHTML}
+                    </div>
+                `;
+
+
+                table3.querySelectorAll('th').forEach(th => th.style.cssText = thStyles3);
+                table3.querySelectorAll('td').forEach(td => td.style.cssText = tdStyles3);
+                const lastRow3 = table3.querySelector('tr:last-child');
+
+                lastRow3.style.backgroundColor = '#d3f9d8';
+                const tableContainer3 = `
+                    <div style="
+                        overflow-x: auto;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        border-radius: 25px;
+                        margin-top: 18px;
+                    ">
+                        ${table3.outerHTML}
+                    </div>
+                `;
+
+                table4.querySelectorAll('th').forEach(th => th.style.cssText = thStyles4);
+                table4.querySelectorAll('td').forEach(td => td.style.cssText = tdStyles4);
+                const lastRow4 = table4.querySelector('tr:last-child');
+
+                lastRow4.style.backgroundColor = '#d3f9d8';
+                const tableContainer4 = `
+                    <div style="
+                        overflow-x: auto;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        border-radius: 25px;
+                        margin-top: 10px;
+                    ">
+                        ${table4.outerHTML}
+                    </div>
+                `;
+
+                table5.querySelectorAll('th').forEach(th => th.style.cssText = thStyles5);
+                table5.querySelectorAll('td').forEach(td => td.style.cssText = tdStyles5);
+                const lastRow5 = table5.querySelector('tr:last-child');
+
+                lastRow5.style.backgroundColor = '#d3f9d8';
+                const tableContainer5 = `
+                    <div style="
+                        overflow-x: auto;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        border-radius: 25px;
+                        margin-top: 10px;
+                    ">
+                        ${table5.outerHTML}
+                    </div>
+                `;
+        
+        
+        
+                content.innerHTML = `
+                    <div style="display: inline-block; background-color: #555; color: #333; padding: 10px 20px; border-radius: 15px; font-size: 20px; font-weight: bold; margin-bottom: 20px;">
+                        Constituency
+                    </div>
+                
+                    <div style="position: relative; margin-left: 10px;">
+                        <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <div style="flex: 1; margin-right: 10px;">
+                                <h3 style="font-weight: 300; margin-bottom: 5px; margin-left: 10px">Voters prediction</h3>
+                                ${tableContainer}
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="font-weight: 400; text-align: center; margin-bottom: 5px;">Number of Voters Rise ${category === 'mla' ? '2008 - 2023' : '2009 - 2024'}</h4>
+                                <canvas id="myChart1" style="max-width: 100%; max-height: 350px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                    <div style='position: relative; margin-left: 20px; margin-top: 60px;'>
+                        <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <div style='flex: 1; margin-right: 20px;'>
+                                <h3 style='font-weight: 300;  margin-left: 10px; margin-bottom: -25px;'>Polling prediction</h3>
+                                ${tableContainer2}
+                            </div>
+                            <div style='flex: 1;'>
+                                <h4 style="font-weight: 400; text-align: center; margin-bottom: 10px;">Number of Polling Overview ${category === 'mla' ? '2008 - 2023' : '2009 - 2024'}</h4>
+                                <canvas id="myChart2" style="max-width: 100%; max-height: 400px;"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                
+                    <div style='position: relative; margin-left: 20px; margin-top: 60px;'>
+                        <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <div style='flex: 1; margin-right: 20px; '>
+                                <h3 style='font-weight: 300; margin-left: 10px;'>BJP Polling prediction</h3>
+                                ${tableContainer3}
+                            </div>
+                            <div style='flex: 1;'>
+                                <h4 style="font-weight: 400; text-align: center; margin-bottom: 10px;">BJP's polling Overview ${category === 'mla' ? '2008 - 2023' : '2009 - 2024'}</h4>
+                                <canvas id="myChart3" style="max-width: 100%; max-height: 400px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div style='position: relative; margin-left: 20px; margin-top: 60px;'>
+                        <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <div style='flex: 1; margin-right: 20px;'>
+                                <h3 style='font-weight: 300; margin-left: 10px;'>INC Polling prediction</h3>
+                                ${tableContainer4}
+                            </div>
+                            <div style='flex: 1;'>
+                                <h4 style="font-weight: 400; text-align: center; margin-bottom: 10px;">INC's polling Overview ${category === 'mla' ? '2008 - 2023' : '2009 - 2024'}</h4>
+                                <canvas id="myChart4" style="max-width: 100%; max-height: 400px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div style='position: relative; margin-left: 20px; margin-top: 60px;'>
+                        <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <div style='flex: 1; margin-right: 20px;'>
+                                <h3 style='font-weight: 300; margin-left: 10px;'>OTH Polling prediction</h3>
+                                ${tableContainer5}
+                            </div>
+                            <div style='flex: 1;'>
+                                <h4 style="font-weight: 400; text-align: center; margin-bottom: 10px;">OTH's polling Overview ${category === 'mla' ? '2008 - 2023' : '2009 - 2024'}</h4>
+                                <canvas id="myChart5" style="max-width: 100%; max-height: 400px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+
+
+            
+                const ctx1 = document.getElementById('myChart1').getContext('2d');
+                myChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: category === 'mla' ? data.voting_Yaxis_mla : data.voting_Yaxis_mp,
+                        datasets: [{
+                            label: 'Predicted Voters',
+                            data: category === 'mla' ? data.voting_Xaxis_mla : data.voting_Xaxis_mp,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: '#333',
+                            borderWidth: 1,
+                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            pointBorderColor: 'rgba(255, 99, 132, 1)',
+                            pointRadius: 1,
+                            pointHoverRadius: 2,
+                            fill: false,
+                            pointStyle: category === 'mla' 
+                                ? data.voting_Yaxis_mla.map(year => year === 2028 ? 'star' : 'circle') 
+                                : data.voting_Yaxis_mp.map(year => year === 2029 ? 'star' : 'circle'),
+                            pointRadius: category === 'mla' 
+                                ? data.voting_Yaxis_mla.map(year => year === 2028 ? 10 : 5) 
+                                : data.voting_Yaxis_mp.map(year => year === 2029 ? 10 : 5)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "Voters Count",
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    borderDash: [10, 5]
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                enabled: true, // Ensure tooltips are enabled
+                                mode: 'nearest', // Show tooltip when hovering closest to a point
+                                intersect: false, // Tooltip shows when hovering anywhere on the chart
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `Value: ${tooltipItem.formattedValue}`;
+                                    }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14
+                                },
+                                borderColor: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 2,
+                                cornerRadius: 8,
+                                padding: 10,
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false
+                        }
+                    }
+                    
+                });
+
+
+
+
+                const ctx2 = document.getElementById('myChart2').getContext('2d');
+                myChart = new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: category === 'mla' ? data.polling_Yaxis_mla : data.polling_Yaxis_mp,
+                        datasets: [{
+                            label: 'Predicted polling',
+                            data: category === 'mla' ? data.polling_Xaxis_mla : data.polling_Xaxis_mp,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: '#333',
+                            borderWidth: 1,
+                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            pointBorderColor: 'rgba(255, 99, 132, 1)',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            fill: false,
+                            pointStyle: category === 'mla' 
+                                ? data.polling_Yaxis_mla.map(year => year === 2028 ? 'star' : 'circle') 
+                                : data.polling_Yaxis_mp.map(year => year === 2029 ? 'star' : 'circle'),
+                            pointRadius: category === 'mla' 
+                                ? data.polling_Yaxis_mla.map(year => year === 2028 ? 10 : 5) 
+                                : data.polling_Yaxis_mp.map(year => year === 2029 ? 10 : 5)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "Pollers Count",
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    borderDash: [10, 5]
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                enabled: true, // Ensure tooltips are enabled
+                                mode: 'nearest', // Show tooltip when hovering closest to a point
+                                intersect: false, // Tooltip shows when hovering anywhere on the chart
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `Value: ${tooltipItem.formattedValue}`;
+                                    }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14
+                                },
+                                borderColor: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 2,
+                                cornerRadius: 8,
+                                padding: 10,
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false
+                        }
+                    }
+                    
+                });
+
+
+
+                
+                const ctx3 = document.getElementById('myChart3').getContext('2d');
+                myChart = new Chart(ctx3, {
+                    type: 'line',
+                    data: {
+                        labels: category === 'mla' ? data.BJP_Yaxis_mla : data.BJP_Yaxis_mp,
+                        datasets: [{
+                            label: 'Predicted polling for BJP',
+                            data: category === 'mla' ? data.BJP_Xaxis_mla : data.BJP_Xaxis_mp,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: '#333',
+                            borderWidth: 1,
+                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            pointBorderColor: 'rgba(255, 99, 132, 1)',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            fill: false,
+                            pointStyle: category === 'mla' 
+                                ? data.BJP_Yaxis_mla.map(year => year === 2028 ? 'star' : 'circle') 
+                                : data.BJP_Yaxis_mp.map(year => year === 2029 ? 'star' : 'circle'),
+                            pointRadius: category === 'mla' 
+                                ? data.BJP_Yaxis_mla.map(year => year === 2028 ? 10 : 5) 
+                                : data.BJP_Yaxis_mp.map(year => year === 2029 ? 10 : 5)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "BJP polling Count",
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    borderDash: [10, 5]
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                enabled: true, // Ensure tooltips are enabled
+                                mode: 'nearest', // Show tooltip when hovering closest to a point
+                                intersect: false, // Tooltip shows when hovering anywhere on the chart
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `Value: ${tooltipItem.formattedValue}`;
+                                    }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14
+                                },
+                                borderColor: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 2,
+                                cornerRadius: 8,
+                                padding: 10,
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false
+                        }
+                    }
+                    
+                });
+
+
+
+                const ctx4 = document.getElementById('myChart4').getContext('2d');
+                myChart = new Chart(ctx4, {
+                    type: 'line',
+                    data: {
+                        labels: category === 'mla' ? data.INC_Yaxis_mla : data.INC_Yaxis_mp,
+                        datasets: [{
+                            label: 'Predicted polling for INC',
+                            data: category === 'mla' ? data.INC_Xaxis_mla : data.INC_Xaxis_mp,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: '#333',
+                            borderWidth: 1,
+                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            pointBorderColor: 'rgba(255, 99, 132, 1)',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            fill: false,
+                            pointStyle: category === 'mla' 
+                                ? data.INC_Yaxis_mla.map(year => year === 2028 ? 'star' : 'circle') 
+                                : data.INC_Yaxis_mp.map(year => year === 2029 ? 'star' : 'circle'),
+                            pointRadius: category === 'mla' 
+                                ? data.INC_Yaxis_mla.map(year => year === 2028 ? 10 : 5) 
+                                : data.INC_Yaxis_mp.map(year => year === 2029 ? 10 : 5)
+                        }]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "INC polling Count",
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    borderDash: [10, 5]
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                enabled: true, // Ensure tooltips are enabled
+                                mode: 'nearest', // Show tooltip when hovering closest to a point
+                                intersect: false, // Tooltip shows when hovering anywhere on the chart
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `Value: ${tooltipItem.formattedValue}`;
+                                    }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14
+                                },
+                                borderColor: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 2,
+                                cornerRadius: 8,
+                                padding: 10,
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false
+                        }
+                    }
+                    
+                });
+
+                const ctx5 = document.getElementById('myChart5').getContext('2d');
+                myChart = new Chart(ctx5, {
+                    type: 'line',
+                    data: {
+                        labels: category === 'mla' ? data.OTH_Yaxis_mla : data.OTH_Yaxis_mp,
+                        datasets: [{
+                            label: 'Predicted OTH',
+                            data: category === 'mla' ? data.OTH_Xaxis_mla : data.OTH_Xaxis_mp,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: '#333',
+                            borderWidth: 1,
+                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            pointBorderColor: 'rgba(255, 99, 132, 1)',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            fill: false,
+                            pointStyle: category === 'mla' 
+                                ? data.OTH_Yaxis_mla.map(year => year === 2028 ? 'star' : 'circle') 
+                                : data.OTH_Yaxis_mp.map(year => year === 2029 ? 'star' : 'circle'),
+                            pointRadius: category === 'mla' 
+                                ? data.OTH_Yaxis_mla.map(year => year === 2028 ? 10 : 5) 
+                                : data.OTH_Yaxis_mp.map(year => year === 2029 ? 10 : 5)
+                        }]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: "OTH polling Count",
+                                    font: {
+                                        size: 14
+                                    }
+                                },
+                                grid: {
+                                    borderDash: [10, 5]
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                enabled: true, // Ensure tooltips are enabled
+                                mode: 'nearest', // Show tooltip when hovering closest to a point
+                                intersect: false, // Tooltip shows when hovering anywhere on the chart
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `Value: ${tooltipItem.formattedValue}`;
+                                    }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14
+                                },
+                                borderColor: 'rgba(255, 255, 255, 0.8)',
+                                borderWidth: 2,
+                                cornerRadius: 8,
+                                padding: 10,
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false
+                        }
+                    }
+                    
+                });
+
+
+
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const resultContainer = document.getElementById('resultContainer');
+        const predictedValueDisplay = document.getElementById('predictedValue');
+        const modal = document.getElementById('dataModal');
+        const closeButton = document.querySelector('.close-button');
+        const dataTable = document.getElementById('dataTable');
+        let dataChartInstance; 
+
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', () => {
+            uploadArea.querySelector('.text').textContent = fileInput.files[0].name;
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileInput.files = e.dataTransfer.files;
+            uploadArea.querySelector('.text').textContent = fileInput.files[0].name;
+            uploadArea.classList.remove('dragging');
+        });
+        
+        function uploadAndPredict() {
+            const fileInput = document.getElementById('fileInput').files[0];
+            const timePeriodColumn = document.getElementById('timePeriodColumn').value;
+            const dataColumn = document.getElementById('dataColumn').value;
+            const predictionYear = document.getElementById('predictionYear').value;
+            if (!fileInput || !timePeriodColumn || !dataColumn || !predictionYear) {
+                alert('Please fill in all fields and upload a file.');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('file', fileInput);
+            formData.append('timePeriodColumn', timePeriodColumn);
+            formData.append('dataColumn', dataColumn);
+            formData.append('predictionYear', predictionYear);
+            fetch('/Predict_for_data', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                predictedValueDisplay.textContent = data.predictedValue;
+                resultContainer.style.display = 'block';
+                document.getElementById('viewDataButton').addEventListener('click', () => {
+                    showDataModal(data.pred_Df, data.YearsList, data.DataList);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during the prediction process.');
+            });
+        }
+        
+        function showDataModal(pred_Df, YearsList, DataList) {
+            dataTable.innerHTML = pred_Df;
+        
+            if (dataChartInstance) {
+                dataChartInstance.destroy(); 
+            }
+        
+            dataChartInstance = new Chart(dataChart.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: YearsList,
+                    datasets: [{
+                        label: 'Data Prediction',
+                        data: DataList,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: false,
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Years'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Data'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: true, 
+                            mode: 'nearest', 
+                            intersect: false, 
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y;
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: false
+                    }
+                }
+            });
+        
+            modal.style.display = 'block';
+        }
+        
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
