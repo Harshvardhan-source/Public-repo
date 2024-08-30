@@ -2783,7 +2783,7 @@ def ChatAI_1(user_input, file):
     data = pd.read_csv(file, encoding='ISO-8859-1')
     llm = ChatGroq(
         model_name="mixtral-8x7b-32768",
-        api_key="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"
+        api_key=os.environ['GROQ_API_KEY']
     )
     df = SmartDataframe(data, config={'llm': llm})
     modify_prom = user_input
@@ -2803,7 +2803,7 @@ def ChatAI(user_input):
     data = pd.read_csv('\Data\MainB.csv', encoding='ISO-8859-1')
     llm = ChatGroq(
         model_name='mixtral-8x7b-32768',
-        api_key="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"
+        api_key=os.environ['GROQ_API_KEY']
     )
 
     df = SmartDataframe(data, config={'llm': llm})
