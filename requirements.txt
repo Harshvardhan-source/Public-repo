@@ -1,0 +1,13 @@
+Flask==3.0.3
+Gunicorn
+python-dotenv==1.0.1
+langchain_groq==0.1.5
+pandasai==2.1.1
+folium==0.17.0
+plotly==5.23.0
+pymongo==4.7.3
+scikit-learn==1.5.0
+numpy==1.26.4
+pandas==1.5.3
+statsmodels
+matplotlib
