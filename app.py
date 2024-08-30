@@ -597,7 +597,7 @@ def comparison(a, b):
 
 
 def SelectedWardAnalytics(ward):
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -741,7 +741,7 @@ def comparison2(percentage):
 
 
 def HMC_Analytics(location):
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -819,17 +819,11 @@ def HMC_Analytics(location):
         }
     }
 
-    data = data_to_prensent['Religion']
-    x_values = list(data.keys())
-    y_values = [item[2] for item in data.values()]
-    print(x_values)
-    print(y_values)
-
-    return data_to_prensent, x_values, y_values
+    return data_to_prensent
 
 
 def Women_EmploymentStatus(wrd):
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -889,7 +883,7 @@ def Women_EmploymentStatus(wrd):
 
 def MinorityStatus(ward_in):
     def MinorityEmploymentStatus(ward):
-        Client_Cloud = pymongo.MongoClient('localhost', 27017)
+        Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
         MainDB = Client_Cloud['MainB']
         MainDB_Coll = MainDB['CollDB']
         total_documents = MainDB_Coll.count_documents({})
@@ -980,7 +974,7 @@ def MinorityStatus(ward_in):
 
 
     def MinorityEconomicStatus(ward):
-        Client_Cloud = pymongo.MongoClient('localhost', 27017)
+        Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
         MainDB = Client_Cloud['MainB']
         MainDB_Coll = MainDB['CollDB']
         total_documents = MainDB_Coll.count_documents({})
@@ -1071,7 +1065,7 @@ def MinorityStatus(ward_in):
 
 
     def MinorityHealthStatus(LOC):
-        Client_Cloud = pymongo.MongoClient('localhost', 27017)
+        Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
         MainDB = Client_Cloud['MainB']
         MainDB_Coll = MainDB['CollDB']
         total_documents = MainDB_Coll.count_documents({})
@@ -1169,7 +1163,7 @@ def MinorityStatus(ward_in):
 
 
 def StudentsUnderBPL(ward):
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -1224,7 +1218,7 @@ def StudentsUnderBPL(ward):
 
 
 def BackwardClassStatus():
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -1232,7 +1226,7 @@ def BackwardClassStatus():
 
 
 def NumberOfResidence():
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -1240,7 +1234,7 @@ def NumberOfResidence():
 
 
 def Diseases_Analytics():
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -1912,7 +1906,7 @@ def Group_based_on_five_ele(To_Group):
 
 
 def collect_SWOT_data():
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['FrontendData']
 
     bejai_collection = MainDB['BEJAI']
@@ -1932,7 +1926,7 @@ def collect_SWOT_data():
 
 
 def HomePageAnalytics():
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     total_documents = MainDB_Coll.count_documents({})
@@ -2722,9 +2716,9 @@ def Group_based_on_five_ele(To_Group):
 
 
 def CollectDataStore():
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['FrontendEnd2']
-    Client_Cloud1 = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud1 = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB1 = Client_Cloud1['MainB']
     DataCollection = MainDB1['CollDB']
     Bejai_collection = MainDB['BEJAI']
@@ -2751,7 +2745,7 @@ def CollectDataStore():
 
 
 def totalVoters(ward):
-    Client_Cloud1 = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud1 = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud1['MainB']
     DataCollection = MainDB['CollDB']
     data_ref1 = {
@@ -2789,7 +2783,7 @@ def ChatAI_1(user_input, file):
     data = pd.read_csv(file, encoding='ISO-8859-1')
     llm = ChatGroq(
         model_name="mixtral-8x7b-32768",
-        api_key=os.environ['GROQ_API_KEY']
+        api_key="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"
     )
     df = SmartDataframe(data, config={'llm': llm})
     modify_prom = user_input
@@ -2809,7 +2803,7 @@ def ChatAI(user_input):
     data = pd.read_csv('\Data\MainB.csv', encoding='ISO-8859-1')
     llm = ChatGroq(
         model_name='mixtral-8x7b-32768',
-        api_key=os.environ['GROQ_API_KEY']
+        api_key="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"
     )
 
     df = SmartDataframe(data, config={'llm': llm})
@@ -2833,7 +2827,7 @@ def is_sublist_in_list(main_list, sublist):
 
 
 def getCounts(list_queries):
-    conn = pymongo.MongoClient('localhost', 27017)
+    conn = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     dbase = conn['MainB']
     count_collection = dbase['CollDB']
     first_stage = []
@@ -4796,7 +4790,7 @@ def ward_overview_page():
 
     if location_name:
         analytics_data = SelectedWardAnalytics(location_name)
-        HMCAnalytics_data, HMC_X_values, HMC_Y_values = HMC_Analytics(location_name)
+        HMCAnalytics_data = HMC_Analytics(location_name)
 
         WomenAnalytics_data, pie_chart_data = Women_EmploymentStatus(location_name)
         data_to_present1, pie_chart_data_min_emp, pie_chart_data_min_unemp, data_to_present1_1, pie_chart_data_min_apl, pie_chart_data_min_bpl, data_to_present55, pie_chart_data_min_hea, pie_chart_data_min_dis = MinorityStatus(location_name)
@@ -4806,16 +4800,17 @@ def ward_overview_page():
                                WomenAnalytics_data=WomenAnalytics_data,
                                analytics_data=analytics_data,
                                HMCAnalytics_data=HMCAnalytics_data,
-                               HMC_X_values = HMC_X_values,
-                               HMC_Y_values = HMC_Y_values,
                                location_name=location_name,
                                pie_chart_data=pie_chart_data,
+
                                MinEmpStat=data_to_present1,
                                pie_chart_data_min_emp=pie_chart_data_min_emp,
                                pie_chart_data_min_unemp=pie_chart_data_min_unemp,
+
                                MinEconStat=data_to_present1_1,
                                pie_chart_data_min_apl=pie_chart_data_min_apl,
                                pie_chart_data_min_bpl=pie_chart_data_min_bpl,
+
                                MinHealthStat=data_to_present55,
                                pie_chart_data_min_hea=pie_chart_data_min_hea,
                                pie_chart_data_min_dis=pie_chart_data_min_dis
@@ -4895,6 +4890,7 @@ def generate_chart1():
     return render_template()
 
 
+
    
 @app.route('/generate_chart_for_anal', methods=['POST'])
 def generate_chart_for_anal():
@@ -4924,6 +4920,7 @@ def prediction_pg():
         tb3_mp.columns = tb3_mp.columns.str.capitalize()
         tb4_mp.columns = tb4_mp.columns.str.capitalize()
         tb5_mp.columns = tb5_mp.columns.str.capitalize()
+
         voting_TableData_mp = tb1_mp.to_html(classes='table table-striped', index=False)
         polling_TableData_mp = tb2_mp.to_html(classes='table table-striped', index=False)
         bjp_TableData_mp = tb3_mp.to_html(classes='table table-striped', index=False)
@@ -4936,6 +4933,7 @@ def prediction_pg():
                 "bjp_TableData_mp" : bjp_TableData_mp,
                 "inc_TableData_mp" : inc_TableData_mp,
                 "oth_TableData_mp" : oth_TableData_mp,
+
                 "voting_Yaxis_mp":getYaxis1,
                 "voting_Xaxis_mp":getXaxis1,
                 "polling_Yaxis_mp":getYaxis2,
@@ -4956,6 +4954,7 @@ def prediction_pg():
         tb3_mla.columns = tb3_mla.columns.str.capitalize()
         tb4_mla.columns = tb4_mla.columns.str.capitalize()
         tb5_mla.columns = tb5_mla.columns.str.capitalize()
+        
         voting_TableData_mla = tb1_mla.to_html(classes='table table-striped', index=False)
         polling_TableData_mla = tb2_mla.to_html(classes='table table-striped', index=False)
         bjp_TableData_mla = tb3_mla.to_html(classes='table table-striped', index=False)
@@ -4968,6 +4967,7 @@ def prediction_pg():
                 "bjp_TableData_mla" : bjp_TableData_mla,
                 "inc_TableData_mla" : inc_TableData_mla,
                 "oth_TableData_mla" : oth_TableData_mla,
+
                 "voting_Yaxis_mla":getYaxis1,
                 "voting_Xaxis_mla":getXaxis1,
                 "polling_Yaxis_mla":getYaxis2,
@@ -4984,7 +4984,7 @@ def prediction_pg():
 
 @app.route('/process', methods=['POST'])
 def process_form():
-    Client_Cloud = pymongo.MongoClient('localhost', 27017)
+    Client_Cloud = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
     MainDB = Client_Cloud['MainB']
     MainDB_Coll = MainDB['CollDB']
     if 'List' in request.form:
@@ -5063,7 +5063,7 @@ def swot_overview():
 def swot_file():
     location_name = request.args.get('location_name')
     if location_name:
-        conn = pymongo.MongoClient('localhost', 27017)
+        conn = pymongo.MongoClient('mongodb+srv://ravindraacharya0512:Iwilltakeovertheworld123@cluster0.ynaiaut.mongodb.net/')
         dbase_bejai = conn['BEJAIy']
         dbase_dn = conn['DEREBAIL_NAIRUTHYAy']
         store_dbnames_in_list = ['BEJAIy', 'DEREBAIL_NAIRUTHYAy']
@@ -5173,10 +5173,3 @@ def index():
 def location(name):
     return render_template('location.html',
                            location_name=name)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
